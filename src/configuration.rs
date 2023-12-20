@@ -13,7 +13,22 @@ pub struct DatabaseSettings {
     pub password: String,
     pub port: u16,
     pub host: String,
-    pub database_host: String,
+    pub database_name: String,
 }
 
-pub fn get_configuration() -> Result<Settings, ConfigError> {}
+impl DatabaseSettings {
+    pub fn connection_string(&self) -> String {
+        format!(
+            "postgres://{}:{}@{}/{}",
+            self.username, self.password, self.host, self.database_name
+        )
+    }
+}
+
+pub fn get_configuration() -> Result<Settings, ConfigError> {
+    let mut settings = config::Config::default();
+
+    settings.merge(config::File::with_name("configuration"))?;
+
+    settings.try_into()
+}

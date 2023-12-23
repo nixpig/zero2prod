@@ -45,9 +45,6 @@ jobs:
       - name: Migrate database
         run: SKIP_DOCKER=true ./scripts/init_db.sh
 
-      - name: Get test env to main env
-        run: cat .env.test > .env
-
       - name: Run tests
         run: cargo test
 

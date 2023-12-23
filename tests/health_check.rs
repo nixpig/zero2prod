@@ -1,5 +1,8 @@
 use std::net::TcpListener;
 
+use sqlx::PgPool;
+use zero2prod::configuration;
+
 #[tokio::test]
 async fn health_check_works() {
     let listener =
@@ -7,8 +10,17 @@ async fn health_check_works() {
 
     let port = listener.local_addr().unwrap().port();
 
-    let server =
-        zero2prod::startup::run(listener).expect("Could not start server");
+    let configuration = configuration::get_configuration()
+        .expect("Failed to get configuration");
+
+    let connection_string = configuration.database.connection_string();
+
+    let pool = PgPool::connect(&connection_string)
+        .await
+        .expect("Failed to connect to database");
+
+    let server = zero2prod::startup::run(listener, pool)
+        .expect("Could not start server");
 
     tokio::spawn(server);
 

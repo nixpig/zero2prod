@@ -11,5 +11,11 @@ async fn main() -> std::io::Result<()> {
         TcpListener::bind(format!("127.0.0.1:{}", config.application_port))
             .expect("Could not bind to port");
 
-    run(listener)?.await
+    let connection_string = config.database.connection_string();
+
+    let pool = sqlx::PgPool::connect(&connection_string)
+        .await
+        .expect("failed to connect to database");
+
+    run(listener, pool)?.await
 }

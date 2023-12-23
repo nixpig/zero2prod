@@ -1,0 +1,10 @@
+- name: newsletter
+  host: 127.0.0.1
+  port: 8000
+  requests:
+    - name: add_subscriber
+      method: post
+      resource: /subscriptions
+      form:
+        name: nixpig4
+        email: test4@nixpig.dev
